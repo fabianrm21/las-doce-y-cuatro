@@ -1,3 +1,6 @@
 */.env
 */env/
 .vscode/
+dy4-backend/*/__pycache__/
+dy4-backend/*/migrations/
+dy4-backend/db.sqlite3

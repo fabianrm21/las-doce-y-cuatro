@@ -1,24 +1,53 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import './App.css'
 import badbunny from './assets/badbunny.jpg'
 import dtmf from './assets/dtmf.png'
 import { API_URL } from './settings/API_URL'
+import { v4 as uuidv4 } from "uuid"
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
-export default function App() {
+
+function getDeviceId() {
+  let deviceId = localStorage.getItem("las_doce_y_cuatro_device_id");
+  if (!deviceId){
+    deviceId = uuidv4();
+    localStorage.setItem("device_id", deviceId);
+  }
+  return deviceId;
+}
+
+function Home() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Get the device ID stored locally
+    const savedDeviceId = localStorage.getItem("las_doce_y_cuatro_device_id");
+
+    // If the user already has a device ID saved, reroute to the success page
+    if (savedDeviceId) {
+      navigate("/spotify-connected");
+    }
+  }, [navigate]);
+
   const handleSpotifyConnect = async () => {
-    // Placeholder function - implement Spotify OAuth functionality here
-    console.log('Spotify connect clicked')
     try{
-      const response = await fetch(`${API_URL}/users/que se yo`, {
+      const deviceId = getDeviceId();
+      const response = await fetch(`${API_URL}/users/link-account/`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include"
+        credentials: "include",
+        body: JSON.stringify({device_id: deviceId}),
       });
 
       const data = await response.json();
       if (!response.ok){
         throw new Error(data.error);
       }
+
+      window.location.href = data.auth_url;
 
     } catch(error){
       alert(error);
@@ -82,4 +111,43 @@ export default function App() {
       </div>
     </div>
   )
+}
+
+function SpotifyConnected(){
+  return (
+    <div className="app-container">
+      <div className="background-section">
+        <div className="background-image" style={{ backgroundImage: `url(${dtmf})` }}></div>
+        <div className="gradient-overlay"></div>
+        <div className="pattern-overlay"></div>
+      </div>
+
+      <div className="main-content">
+        <div className="hero-section">
+          <div className="hero-image-container">
+            <img src={badbunny} alt="Bad Bunny" className="hero-image" />
+            <div className="image-glow"></div>
+          </div>
+
+          <h1 className="main-title">SUCCESS</h1>
+          <p className="subtitle">Ahora solo toca esperar <span className="emoji">🐰</span></p>
+          
+        </div>
+
+        <footer className="footer">© 2025 Las Doce y Cuatro</footer>
+      </div>
+    </div>
+  );
+}
+
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/spotify-connected" element={<SpotifyConnected />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }

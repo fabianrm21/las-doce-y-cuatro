@@ -25,12 +25,21 @@ load_dotenv()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
+CALLBACK_URL = os.getenv("CALLBACK_URL")
+FRONTEND_HOST_URL = os.getenv("FRONTEND_HOST_URL")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv("FRONTEND_HOST_DOMAIN")]
-CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_HOST_URL")]
+# ALLOWED_HOSTS = [os.getenv("FRONTEND_HOST_DOMAIN")]
+# CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_HOST_URL")]
+ALLOWED_HOSTS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     "authorization",
@@ -54,10 +63,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework', 
+    'corsheaders',
     "users",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
