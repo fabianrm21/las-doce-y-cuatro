@@ -5,11 +5,11 @@ import dtmf from './assets/dtmf.png'
 import { API_URL } from './settings/API_URL'
 import { v4 as uuidv4 } from "uuid"
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 function getDeviceId() {
-  let deviceId = localStorage.getItem("las_doce_y_cuatro_device_id");
+  let deviceId = localStorage.getItem("device_id");
   if (!deviceId){
     deviceId = uuidv4();
     localStorage.setItem("device_id", deviceId);
@@ -22,7 +22,7 @@ function Home() {
 
   useEffect(() => {
     // Get the device ID stored locally
-    const savedDeviceId = localStorage.getItem("las_doce_y_cuatro_device_id");
+    const savedDeviceId = localStorage.getItem("device_id");
 
     // If the user already has a device ID saved, reroute to the success page
     if (savedDeviceId) {
@@ -114,6 +114,32 @@ function Home() {
 }
 
 function SpotifyConnected(){
+  const [playbackTime, setPlaybackTime] = useState("");
+
+  useEffect(() => {
+    const getPlaybackTime = async () =>{
+      try{
+        const deviceId = getDeviceId();
+        const response = await fetch(`${API_URL}/playback-time/`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({device_id: deviceId}),
+        });
+
+        const data = await response.json();
+        if (!response.ok){
+          throw new Error(data.error);
+        }
+        setPlaybackTime(data.playback_time);
+      } catch(error){
+        alert(error);
+      }
+    }
+    getPlaybackTime();
+  }, []);
+
   return (
     <div className="app-container">
       <div className="background-section">
@@ -129,8 +155,10 @@ function SpotifyConnected(){
             <div className="image-glow"></div>
           </div>
 
-          <h1 className="main-title">SUCCESS</h1>
+          <h1 className="main-title">Ya está</h1>
           <p className="subtitle">Ahora solo toca esperar <span className="emoji">🐰</span></p>
+          <p className="subtitle">Y asegurarte de que tengas Spotify abierto y con cualquier canción en play antes de la hora 0</p>
+          <PlaybackTimer playbackTime={playbackTime}/>
           
         </div>
 
@@ -139,6 +167,94 @@ function SpotifyConnected(){
     </div>
   );
 }
+
+function PlaybackTimer({playbackTime}: {playbackTime: string}){
+  const [timeRemaining, setTimeRemaining] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    total: 0
+  });
+
+  useEffect(() => {
+    if (!playbackTime) return;
+
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const targetTime = new Date(playbackTime).getTime();
+      const difference = targetTime - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeRemaining({
+          days,
+          hours,
+          minutes,
+          seconds,
+          total: difference
+        });
+      } else {
+        setTimeRemaining({
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          total: 0
+        });
+      }
+    };
+
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 1000);
+
+    return () => clearInterval(interval);
+  }, [playbackTime]);
+
+  if (!playbackTime) {
+    return null;
+  }
+
+  if (timeRemaining.total <= 0) {
+    return (
+      <div className="timer-container">
+        <p className="timer-message">¡Es hora! 🎵</p>
+      </div>
+    );
+  }
+
+  console.log("playback time:", playbackTime);
+
+  return (
+    <div className="timer-container">
+      <div className="timer-display">
+        {timeRemaining.days > 0 && (
+          <div className="time-unit">
+            <span className="time-value">{timeRemaining.days}</span>
+            <span className="time-label">{timeRemaining.days === 1 ? 'día' : 'días'}</span>
+          </div>
+        )}
+        <div className="time-unit">
+          <span className="time-value">{timeRemaining.hours}</span>
+          <span className="time-label">{timeRemaining.hours === 1 ? 'hora' : 'horas'}</span>
+        </div>
+        <div className="time-unit">
+          <span className="time-value">{timeRemaining.minutes}</span>
+          <span className="time-label">{timeRemaining.minutes === 1 ? 'minuto' : 'minutos'}</span>
+        </div>
+        <div className="time-unit">
+          <span className="time-value">{timeRemaining.seconds}</span>
+          <span className="time-label">{timeRemaining.seconds === 1 ? 'segundo' : 'segundos'}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 
 export default function App() {

@@ -29,6 +29,7 @@ SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 CALLBACK_URL = os.getenv("CALLBACK_URL")
 FRONTEND_HOST_URL = os.getenv("FRONTEND_HOST_URL")
+DTMF_ALBUM_ID = os.getenv("DTMF_ALBUM_ID")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -51,8 +52,6 @@ CORS_ALLOW_HEADERS = [
     "cache-control",
     "x-requested-with",
 ]
-
-
 
 # Application definition
 

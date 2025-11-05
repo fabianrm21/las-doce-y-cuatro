@@ -6,19 +6,21 @@ from rest_framework import generics, status, serializers
 from django.conf import settings
 import base64
 import requests
-from .models import SpotifyAuth
+from .models import SpotifyAuth, LinkedDevice
+from .utils import get_valid_token, play_dtmf_api_call, calculate_playback_time
 
 
 class LinkSpotifyAccount(APIView):
     def post(self, request):
         device_id = request.data.get("device_id")
 
-        existing = SpotifyAuth.objects.filter(device_id=device_id).first()
+        device = LinkedDevice.objects.filter(id=device_id).exists()
+        existing = device and (device.spotify_account is not None)
         if existing:
             return Response({"message": "Account already linked"}, status=status.HTTP_200_OK)
         
         client_id = settings.SPOTIFY_CLIENT_ID
-        redirect_uri = f"{settings.CALLBACK_URL}/users/spotify/callback/"
+        redirect_uri = f"{settings.CALLBACK_URL}/spotify/callback/"
         scope = "user-read-private user-read-email user-top-read"
 
         query_params = urlencode({
@@ -40,7 +42,7 @@ class SpotifyCallback(APIView):
         code = request.GET.get("code")
         device_id = request.GET.get("state")
 
-        redirect_uri = f"{settings.CALLBACK_URL}/users/spotify/callback/"
+        redirect_uri = f"{settings.CALLBACK_URL}/spotify/callback/"
         token_url = "https://accounts.spotify.com/api/token"
 
         client_id = settings.SPOTIFY_CLIENT_ID
@@ -70,12 +72,31 @@ class SpotifyCallback(APIView):
                                    headers={"Authorization": f"Bearer {access_token}"})
         
         spotify_user_id = get_user_id.json().get("id")
-        SpotifyAuth.objects.update_or_create(
-            spotify_user_id=spotify_user_id,
-            defaults={
-                "device_id": device_id,
-                "refresh_token": refresh_token,
-            },
-        )
+        user = SpotifyAuth.objects.create(spotify_user_id=spotify_user_id,
+                                   refresh_token=refresh_token)
         
+        LinkedDevice.objects.create(id=device_id,
+                                    spotify_account=user)        
         return redirect(f"{settings.FRONTEND_HOST_URL}/spotify-connected/")
+    
+
+class GetPlaybackTime(APIView):
+
+    def post(self, request):
+        device_id = request.data.get("device_id")
+        user = LinkedDevice.objects.get(id=device_id).spotify_account
+        playback_time = calculate_playback_time(refresh_token=user.refresh_token)
+        # print("this is playback time:", playback_time)
+        return Response({"playback_time": str(playback_time)},
+                        status=status.HTTP_200_OK)
+    
+
+class PlayDTMF(APIView):
+
+    def post(self, request):
+        users = SpotifyAuth.objects.all()
+        for user in users:
+            access_token = get_valid_token(user.refresh_token)
+            play_dtmf_api_call(user=user, access_token=access_token)
+        return Response({"message": "Vamo a vel si es veldad"},
+                        status=status.HTTP_204_NO_CONTENT)
