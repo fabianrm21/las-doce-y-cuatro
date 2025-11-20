@@ -6,8 +6,8 @@ from rest_framework import generics, status, serializers
 from django.conf import settings
 import base64
 import requests
-from .models import SpotifyAuth, LinkedDevice
-from .utils import get_valid_token, play_dtmf_api_call, calculate_playback_time
+from .models import SpotifyAuth, LinkedDevice, GlobalPlaybackSchedule
+from .utils import get_valid_token, play_dtmf_api_call
 
 
 class LinkSpotifyAccount(APIView):
@@ -85,7 +85,8 @@ class GetPlaybackTime(APIView):
     def post(self, request):
         device_id = request.data.get("device_id")
         user = LinkedDevice.objects.get(id=device_id).spotify_account
-        playback_time = calculate_playback_time(refresh_token=user.refresh_token)
+        playback_time = GlobalPlaybackSchedule.objects.get(id=1).playback_time
+        # playback_time = calculate_playback_time(refresh_token=user.refresh_token)
         # print("this is playback time:", playback_time)
         return Response({"playback_time": str(playback_time)},
                         status=status.HTTP_200_OK)

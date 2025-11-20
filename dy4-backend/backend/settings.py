@@ -30,6 +30,11 @@ SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 CALLBACK_URL = os.getenv("CALLBACK_URL")
 FRONTEND_HOST_URL = os.getenv("FRONTEND_HOST_URL")
 DTMF_ALBUM_ID = os.getenv("DTMF_ALBUM_ID")
+AWS_REGION = os.getenv("AWS_REGION")
+AWS_ACCESS_KEY = os.getenv("AWS_ACCESS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
+AWS_ACCOUNT_ID = os.getenv("AWS_ACCOUNT_ID")
+AWS_ROLE_ARN = os.getenv("AWS_ROLE_ARN")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

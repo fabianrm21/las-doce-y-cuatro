@@ -37,28 +37,28 @@ def play_dtmf_api_call(user: SpotifyAuth, access_token: str):
     response = requests.put(url, headers=headers, json=data)
 
 
-def calculate_playback_time(refresh_token: str):
-    access_token = get_valid_token(refresh_token)
+# def calculate_playback_time(refresh_token: str):
+#     access_token = get_valid_token(refresh_token)
 
-    url = f"https://api.spotify.com/v1/albums/{settings.DTMF_ALBUM_ID}"
-    headers = {"Authorization": f"Bearer {access_token}"}
-    response = requests.get(url, headers=headers)
-    response_dict = response.json()
+#     url = f"https://api.spotify.com/v1/albums/{settings.DTMF_ALBUM_ID}"
+#     headers = {"Authorization": f"Bearer {access_token}"}
+#     response = requests.get(url, headers=headers)
+#     response_dict = response.json()
 
-    # print("response from getting dtmf:", response_dict)
+#     # print("response from getting dtmf:", response_dict)
 
-    tracks = response_dict.get("tracks")["items"]
-    total_duration = 0
-    for track in tracks:
-        if track["name"] == "PIToRRO DE COCO":
-            # only add the time until the magic words (53 seconds in)
-            total_duration += 53000 
-            break
-        total_duration += track["duration_ms"]
+#     tracks = response_dict.get("tracks")["items"]
+#     total_duration = 0
+#     for track in tracks:
+#         if track["name"] == "PIToRRO DE COCO":
+#             # only add the time until the magic words (53 seconds in)
+#             total_duration += 53000 
+#             break
+#         total_duration += track["duration_ms"]
 
 
-    ast = timezone(timedelta(hours=-4))
-    las_doce_y_cuatro_ast = datetime(2026, 1, 1, 0, 4, 0, tzinfo=ast)  # January 1st, 2026, 12:04 AM
+#     ast = timezone(timedelta(hours=-4))
+#     las_doce_y_cuatro_ast = datetime(2026, 1, 1, 0, 4, 0, tzinfo=ast)  # January 1st, 2026, 12:04 AM
 
-    playback_time = las_doce_y_cuatro_ast - timedelta(milliseconds=total_duration)
-    return playback_time
+#     playback_time = las_doce_y_cuatro_ast - timedelta(milliseconds=total_duration)
+#     return playback_time
