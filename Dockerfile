@@ -22,4 +22,4 @@ RUN python manage.py create_global_schedule
 EXPOSE 8000
 
 # Run the Django app with Gunicorn and WhiteNoise
-CMD ["gunicorn", "musikai.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
