@@ -21,7 +21,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-load_dotenv()
+load_dotenv(BASE_DIR.parent / ".env")
+# load_dotenv()
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
@@ -31,7 +33,6 @@ CALLBACK_URL = os.getenv("CALLBACK_URL")
 FRONTEND_HOST_URL = os.getenv("FRONTEND_HOST_URL")
 DTMF_ALBUM_ID = os.getenv("DTMF_ALBUM_ID")
 DTMF_ENDPOINT_KEY = os.getenv("DTMF_ENDPOINT_KEY")
-print("os.environ.get:", os.environ.get("DTMF_ENDPOINT_KEY"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
