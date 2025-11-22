@@ -82,12 +82,8 @@ class SpotifyCallback(APIView):
 
 class GetPlaybackTime(APIView):
 
-    def post(self, request):
-        device_id = request.data.get("device_id")
-        user = LinkedDevice.objects.get(id=device_id).spotify_account
+    def get(self, request):
         playback_time = GlobalPlaybackSchedule.objects.get(id=1).playback_time
-        # playback_time = calculate_playback_time(refresh_token=user.refresh_token)
-        # print("this is playback time:", playback_time)
         return Response({"playback_time": str(playback_time)},
                         status=status.HTTP_200_OK)
     
@@ -95,9 +91,14 @@ class GetPlaybackTime(APIView):
 class PlayDTMF(APIView):
 
     def post(self, request):
+        secret = request.data.get("secret")
+        if not secret or secret != settings.DTMF_ENDPOINT_KEY:
+            return Response({"error": "Incorrect or missing secret key"},
+                            status=status.HTTP_403_FORBIDDEN)
+        
         users = SpotifyAuth.objects.all()
         for user in users:
             access_token = get_valid_token(user.refresh_token)
             play_dtmf_api_call(user=user, access_token=access_token)
         return Response({"message": "Vamo a vel si es veldad"},
-                        status=status.HTTP_204_NO_CONTENT)
+                        status=status.HTTP_200_OK)

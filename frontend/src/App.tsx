@@ -119,13 +119,9 @@ function SpotifyConnected(){
   useEffect(() => {
     const getPlaybackTime = async () =>{
       try{
-        const deviceId = getDeviceId();
+        // const deviceId = getDeviceId();
         const response = await fetch(`${API_URL}/playback-time/`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({device_id: deviceId}),
+          method: "GET",
         });
 
         const data = await response.json();
@@ -226,8 +222,6 @@ function PlaybackTimer({playbackTime}: {playbackTime: string}){
       </div>
     );
   }
-
-  console.log("playback time:", playbackTime);
 
   return (
     <div className="timer-container">
