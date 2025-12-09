@@ -35,16 +35,20 @@ DTMF_ALBUM_ID = os.getenv("DTMF_ALBUM_ID")
 DTMF_ENDPOINT_KEY = os.getenv("DTMF_ENDPOINT_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = FRONTEND_HOST_URL == "http://localhost:5173"
 
 # ALLOWED_HOSTS = [os.getenv("FRONTEND_HOST_DOMAIN")]
 # CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_HOST_URL")]
 ALLOWED_HOSTS = ["*"]
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-#     "http://127.0.0.1:5173",
-# ]
-CORS_ALLOWED_ORIGINS = ["*"]
+
+if DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+else:
+    CORS_ALLOWED_ORIGINS = [FRONTEND_HOST_URL]
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     "authorization",
