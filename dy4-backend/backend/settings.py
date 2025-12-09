@@ -34,26 +34,17 @@ FRONTEND_HOST_URL = os.getenv("FRONTEND_HOST_URL")
 DTMF_ALBUM_ID = os.getenv("DTMF_ALBUM_ID")
 DTMF_ENDPOINT_KEY = os.getenv("DTMF_ENDPOINT_KEY")
 
-print("these are our keys:", {
-    "SECRET_KEY": SECRET_KEY,
-    "SPOTIFY_CLIENT_ID": SPOTIFY_CLIENT_ID,
-    "SPOTIFY_CLIENT_SECRET": SPOTIFY_CLIENT_SECRET,
-    "CALLBACK_URL": CALLBACK_URL,
-    "FRONTEND_HOST_URL": FRONTEND_HOST_URL,
-    "DTMF_ALBUM_ID": DTMF_ALBUM_ID,
-    "DTMF_ENDPOINT_KEY": DTMF_ENDPOINT_KEY,
-})
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # ALLOWED_HOSTS = [os.getenv("FRONTEND_HOST_DOMAIN")]
 # CORS_ALLOWED_ORIGINS = [os.getenv("FRONTEND_HOST_URL")]
 ALLOWED_HOSTS = ["*"]
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",
+#     "http://127.0.0.1:5173",
+# ]
+CORS_ALLOWED_ORIGINS = ["*"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
     "authorization",
