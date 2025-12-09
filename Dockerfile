@@ -16,11 +16,11 @@ RUN python manage.py collectstatic --noinput
 # Apply migrations
 RUN python manage.py makemigrations
 RUN python manage.py migrate --run-syncdb
-RUN python manage.py create_global_schedule
+# RUN python manage.py create_global_schedule
 
 # Expose port 8000 (to match your Django setup)
 EXPOSE 8000
 
 # Run the Django app with Gunicorn and WhiteNoise
 # CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
-CMD ["bash", "-c", "python manage.py startup_script && gunicorn backend.wsgi:application --bind 0.0.0.0:8000"]
+CMD ["bash", "-c", "python manage.py create_global_schedule && gunicorn backend.wsgi:application --bind 0.0.0.0:8000"]
