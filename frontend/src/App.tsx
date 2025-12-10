@@ -26,6 +26,7 @@ function Home() {
 
     // If the user already has a device ID saved, reroute to the success page
     if (savedDeviceId) {
+      console.log("attempting to reroute the user:", savedDeviceId);
       navigate("/spotify-connected");
     }
   }, [navigate]);

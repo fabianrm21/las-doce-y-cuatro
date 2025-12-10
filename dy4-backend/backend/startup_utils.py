@@ -10,9 +10,6 @@ def get_app_access_token(client_id: str, client_secret: str) -> str:
         data={"grant_type": "client_credentials"},
         auth=(client_id, client_secret),
     )
-    print("this is the client id:", client_id)
-    print("this is the client secret:", client_secret)
-    print("this is the token response:", response.json())
     response.raise_for_status()
     return response.json()["access_token"]
 
