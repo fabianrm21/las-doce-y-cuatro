@@ -82,7 +82,7 @@ class SpotifyCallback(APIView):
         LinkedDevice.objects.create(id=device_id,
                                     spotify_account=user)
         print("we've made it here")     
-        return redirect(f"{settings.FRONTEND_HOST_URL}/spotify-connected/")
+        return redirect(f"{settings.FRONTEND_HOST_URL}/spotify-connected")
     
 
 class GetPlaybackTime(APIView):
