@@ -62,6 +62,7 @@ class SpotifyCallback(APIView):
             response = requests.post(token_url, headers=headers, data=data)
             tokens = response.json()
         except:
+            print("this is happening")
             return Response({"error": "Error during callback"},
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -76,7 +77,8 @@ class SpotifyCallback(APIView):
                                    refresh_token=refresh_token)
         
         LinkedDevice.objects.create(id=device_id,
-                                    spotify_account=user)        
+                                    spotify_account=user)
+        print("we've made it here")     
         return redirect(f"{settings.FRONTEND_HOST_URL}/spotify-connected/")
     
 
