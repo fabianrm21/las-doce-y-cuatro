@@ -73,8 +73,11 @@ class SpotifyCallback(APIView):
                                    headers={"Authorization": f"Bearer {access_token}"})
         
         spotify_user_id = get_user_id.json().get("id")
+        print("we have not made it here")
         user = SpotifyAuth.objects.create(spotify_user_id=spotify_user_id,
                                    refresh_token=refresh_token)
+        
+        print("this is what fucked it up")
         
         LinkedDevice.objects.create(id=device_id,
                                     spotify_account=user)
