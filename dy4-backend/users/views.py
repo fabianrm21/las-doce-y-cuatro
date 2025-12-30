@@ -4,10 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, status, serializers
 from django.conf import settings
+from django.utils import timezone
 import base64
 import requests
 from .models import SpotifyAuth, LinkedDevice, GlobalPlaybackSchedule
 from .utils import get_valid_token, play_dtmf_api_call
+from backend.startup_utils import calculate_global_playback_start
 
 
 class LinkSpotifyAccount(APIView):
@@ -105,9 +107,37 @@ class PlayDTMF(APIView):
             return Response({"error": "Incorrect or missing secret key"},
                             status=status.HTTP_403_FORBIDDEN)
         
+
+        playback_time = GlobalPlaybackSchedule.objects.get(id=1).playback_time
+
+        if not playback_time:
+            return Response({"error": "Error scheduling call"},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        while True:
+            now = timezone.now()
+            if now == playback_time:
+                break
+        
         users = SpotifyAuth.objects.all()
         for user in users:
             access_token = get_valid_token(user.refresh_token)
             play_dtmf_api_call(user=user, access_token=access_token)
         return Response({"message": "Vamo a vel si es veldad"},
                         status=status.HTTP_200_OK)
+    
+
+class CalculatePlaybackTime(APIView):
+
+    def post(sefl, request):
+        secret = request.data.get("secret")
+        if not secret or secret != settings.DTMF_ENDPOINT_KEY:
+            return Response({"error": "Incorrect or missing secret key"},
+                            status=status.HTTP_403_FORBIDDEN)
+        
+        playback_utc = calculate_global_playback_start()
+        GlobalPlaybackSchedule.objects.create(
+            playback_time=playback_utc,
+        )
+        return Response({"message": "Playback time calculated"},
+                        status=status.HTTP_201_CREATED)
