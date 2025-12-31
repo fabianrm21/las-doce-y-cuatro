@@ -29,47 +29,47 @@
 
 
 # Use a lightweight Python base image
-# FROM python:3.12-slim
-
-# # Set the working directory
-# WORKDIR /app
-
-# # Copy backend code into the container
-# COPY dy4-backend/ /app/
-
-# # Install dependencies
-# RUN pip install --no-cache-dir -r requirements.txt
-
-# # Collect static files
-# RUN mkdir -p /app/static
-# RUN python manage.py collectstatic --noinput
-
-# # Copy entrypoint and give it execute permissions
-# COPY dy4-backend/entrypoint.sh /entrypoint.sh
-# RUN chmod +x /entrypoint.sh
-
-# # Expose Django/Gunicorn port
-# EXPOSE 8000
-
-# # Use entrypoint to run migrations + schedule creation
-# ENTRYPOINT ["/entrypoint.sh"]
-
-# # Run gunicorn
-# CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
-
-
-
 FROM python:3.12-slim
 
+# Set the working directory
 WORKDIR /app
 
+# Copy backend code into the container
 COPY dy4-backend/ /app/
 
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Collect static files
 RUN mkdir -p /app/static
 RUN python manage.py collectstatic --noinput
 
+# Copy entrypoint and give it execute permissions
+COPY dy4-backend/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expose Django/Gunicorn port
 EXPOSE 8000
 
+# Use entrypoint to run migrations + schedule creation
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Run gunicorn
 CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
+
+
+
+# FROM python:3.12-slim
+
+# WORKDIR /app
+
+# COPY dy4-backend/ /app/
+
+# RUN pip install --no-cache-dir -r requirements.txt
+
+# RUN mkdir -p /app/static
+# RUN python manage.py collectstatic --noinput
+
+# EXPOSE 8000
+
+# CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
