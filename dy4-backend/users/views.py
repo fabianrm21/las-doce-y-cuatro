@@ -15,14 +15,11 @@ from backend.startup_utils import calculate_global_playback_start
 class LinkSpotifyAccount(APIView):
     def post(self, request):
         device_id = request.data.get("device_id")
-        print(1)
 
         device = LinkedDevice.objects.filter(id=device_id).exists()
-        print(2)
         existing = device and (device.spotify_account is not None)
         if existing:
             return Response({"message": "Account already linked"}, status=status.HTTP_200_OK)
-        print(3)
         
         client_id = settings.SPOTIFY_CLIENT_ID
         redirect_uri = f"{settings.CALLBACK_URL}/spotify/callback/"
@@ -37,7 +34,6 @@ class LinkSpotifyAccount(APIView):
         })
 
         auth_url = f"https://accounts.spotify.com/authorize?{query_params}"
-        print(4)
         return Response({"auth_url": auth_url}, status=status.HTTP_200_OK)
     
 
