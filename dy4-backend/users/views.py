@@ -114,10 +114,10 @@ class PlayDTMF(APIView):
             return Response({"error": "Error scheduling call"},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        while True:
-            now = timezone.now()
-            if now == playback_time:
-                break
+        # while True:
+        #     now = timezone.now()
+        #     if now == playback_time:
+        #         break
         
         users = SpotifyAuth.objects.all()
         for user in users:
